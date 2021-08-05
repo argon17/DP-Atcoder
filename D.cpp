@@ -1,21 +1,28 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+#define inf 1e18
+
+auto max_self = [](int &a, int b) {
+    a = max(a, b);
+};
+
 void argon17()
 {
-    int items, capacity;
-    cin >> items >> capacity;
-    vector<int> weights(items + 1), value(items + 1);
-    for (int item = 1; item <= items; ++item) {
-        cin >> weights[item] >> value[item];
-    }
-    vector<vector<int>> dp(items + 1, vector<int>(capacity + 1, 0));
-    for (int item = 1; item <= items; ++item) {
-        for (int weight = 1; weight <= capacity; ++weight) {
-            dp[item][weight] = dp[item - 1][weight];
-            if (weight >= weights[item])
-                dp[item][weight] = max(dp[item][weight], value[item] + dp[item - 1][weight - weights[item]]);
+    int n, W;
+    cin >> n >> W;
+    vector<int> dp(W + 1, 0);
+    // dp[i] = max value, i = current weight
+    for (int i = 0; i < n; ++i) {
+        int wt, val;
+        cin >> wt >> val;
+        // rtl to avoid duplication, (0/1)
+        for (int curWt = W - wt; curWt >= 0; --curWt) {
+            max_self(dp[curWt + wt], dp[curWt] + val);
         }
     }
-    cout << dp[items][capacity] << endl;
+    int ans = 0;
+    for (int &x : dp)
+        max_self(ans, x);
+    cout << ans << endl;
 }
